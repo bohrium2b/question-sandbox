@@ -1,0 +1,119 @@
+import { Meta, Story, Controls, Canvas, Stories } from '@storybook/addon-docs/blocks';
+import {MultiChoice} from '../MultiChoice';
+import * as MultiChoiceStories from './MultiChoice.stories';
+import Box from '@mui/material/Box';
+
+<Meta
+    title="Components/Examination/MultiChoice"
+    component={MultiChoice}
+    parameters={{
+        docs: {
+        },
+    }}
+    of={MultiChoiceStories}
+/>
+
+# MultiChoice
+The `MultiChoice` component is designed to render multiple-choice questions with options for users to select. It supports various configurations, including correct answers, hints, and feedback.
+
+<Canvas of={MultiChoiceStories.Default}>
+    <Story name="Default" />
+    
+</Canvas>
+<Controls />
+
+## Usage
+
+````jsx
+import React from 'react';
+import { MultiChoice } from '../MultiChoice';
+
+const question = {
+    question: "ENHYPEN is a South Korean boy band. Who is the leader of ENHYPEN?",
+    choices: [
+        { content: "Jungwon", correct: true },
+        { content: "Heeseung", correct: false },
+        { content: "Sunghoon", correct: false },
+        { content: "Niki", correct: false }
+    ],
+    hints: [
+        "He is the leader of ENHYPEN.",
+        "He was born in South Korea.",
+        "He is known for his leadership skills."
+    ],
+    questionId: "1"
+};
+
+const MyComponent = () => {
+    return (
+        <div>
+            <MultiChoice
+                question={question.question}
+                choices={question.choices}
+                hints={question.hints}
+                questionId={question.questionId}
+            />
+        </div>
+    );
+};
+````
+
+This example demonstrates how to use the `MultiChoice` component by passing a question, choices, hints, and a unique question ID. The component will render the question with selectable options and display hints when requested.
+
+<Box sx={{ border: '2px solid #d3d3d3', borderRadius: 3, padding: 2}}>
+<Story of={MultiChoiceStories.KPopQuestion} name="KPopQuestion" />
+</Box>
+
+## Props
+The `MultiChoice` component accepts the following props:
+
+
+| Prop          | Type                | Description                                                                 | Required | Default   |
+|---------------|---------------------|-----------------------------------------------------------------------------|----------|-----------|
+| `question`    | string              | The question text to display.                                              | Yes      | —         |
+| `choices`     | array               | Array of choice objects with `content` and `correct` properties.          | Yes      | —         |
+| `hints`       | array               | Array of hint strings to help the user.                                   | No       | —         |
+| `questionId`  | string              | Unique identifier for the question.                                       | No       | —         |
+
+
+## Scoring
+The `MultiChoice` component exposes a method to retrieve the score based on user selections. The score is calculated as a percentage of correct answers.
+
+To access the score, you can use a `ref` to the component instance:
+
+```jsx
+import React, { useRef } from 'react';
+import { MultiChoice } from '../MultiChoice';
+import questionData from './questionData.json';
+
+const MyComponent = () => {
+    const multiChoiceRef = useRef(null);
+
+    const handleGetScore = () => {
+        if (multiChoiceRef.current) {
+            const score = multiChoiceRef.current.getScore();
+            console.log(`Score: ${score}`);
+        }
+    };
+
+    return (
+        <div>
+            <MultiChoice
+                ref={multiChoiceRef}
+                question={questionData.question}
+                choices={questionData.choices}
+                hints={questionData.hints}
+                questionId={questionData.questionId}
+            />
+            <button onClick={handleGetScore}>Get Score</button>
+        </div>
+    );
+};
+```
+
+
+When the "Get Score" button is clicked, it will log the score to the console based on the user's selections.
+
+When the score is -1, it indicates that the user has not made any selections yet. The component will return a score of -1 in this case.
+
+<Stories />

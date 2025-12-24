@@ -1,0 +1,72 @@
+import { Meta, Story, Controls, Canvas, Stories } from '@storybook/addon-docs/blocks';
+import {MultiChoiceEditor} from '../MultiChoiceEditor';
+import * as MultiChoiceEditorStories from './MultiChoiceEditor.stories';
+import Box from '@mui/material/Box';
+
+<Meta
+    title="Components/Examination/MultiChoiceEditor"
+    component={MultiChoiceEditor}
+    parameters={{
+        docs: {
+        },
+    }}
+    of={MultiChoiceEditorStories}
+/>
+
+# MultiChoiceEditor
+The `MultiChoiceEditor` component is designed to create and edit multiple-choice questions. It allows users to define questions, choices, correct answers, hints, and feedback.
+
+<Canvas of={MultiChoiceEditorStories.Default}>
+    <Story name="Default" />
+</Canvas>
+<Controls />
+
+## Usage
+
+````jsx
+import React from 'react';
+import { MultiChoiceEditor } from '../MultiChoiceEditor';
+import { Box } from '@mui/material';
+import { useState } from 'react';
+const MyComponent = () => {
+    const question = {
+        question: "What is the capital of France?",
+        choices: [
+            { content: "Paris", correct: true },
+            { content: "London", correct: false },
+            { content: "Berlin", correct: false },
+            { content: "Madrid", correct: false }
+        ],
+        hints: ["It's known as the city of lights.", "It's famous for the Eiffel Tower."],
+        questionId: "1"
+    };
+
+    const editorRef = React.useRef(null);
+
+    return (
+        <Box>
+            <MultiChoiceEditor
+                ref={editorRef}
+                question={question.question}
+                choices={question.choices}
+                hints={question.hints}
+                questionId={question.questionId}
+            />
+        </Box>
+    );
+};
+export default MyComponent;
+````
+
+## Props
+| Prop          | Type                | Description                                                                 |
+|---------------|---------------------|-----------------------------------------------------------------------------|
+| question      | string              | The question text to be displayed.                                         |
+| choices       | `Array<{ content: string, correct: boolean }>` | An array of choices, each with content and a boolean indicating if it's correct. |
+| hints         | `Array<string>`       | An array of hints related to the question.                                 |
+| questionId    | string              | A unique identifier for the question.                                      |
+
+## Features
+- **Dynamic Choices**: Users can add, edit, or remove choices dynamically.
+- **Correct Answer Selection**: Users can mark a/multiple choice(s) as correct.
+- **Hints**: Users can provide hints that can be displayed to the user.

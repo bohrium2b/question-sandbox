@@ -1,0 +1,7 @@
+.katex {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+}
+
+.katex .mathnormal {
+    font-family: 'Roboto', sans-serif;
+}

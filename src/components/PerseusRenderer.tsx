@@ -196,7 +196,7 @@ export const PerseusRenderer = forwardRef<PerseusRendererRef, PerseusRendererPro
                 </Typography>}
                 <Box sx={{ display: "inline", maxWidth: "50rem;" }}><Markdown>{question}</Markdown></Box>
             </Box>
-            <Box sx={{ padding: 2, fontFamily: 'Roboto, sans-serif', overflow: "auto" }} className="perseus-framework">
+            <Box sx={{ padding: 4, fontFamily: 'Roboto, sans-serif', overflow: "auto" }} className="perseus-framework">
                 <PerseusI18nContextProvider locale="en" strings={mockStrings}>
                     <ServerItemRenderer
                         ref={rendererRef}
@@ -217,6 +217,7 @@ export const PerseusRenderer = forwardRef<PerseusRendererRef, PerseusRendererPro
                         apiOptions={{
                             flags: {"new-radio-widget": props.newRadioWidget ?? false, "image-widget-upgrade": true}
                         }}
+                        hintsVisible={0}
                     />
                 </PerseusI18nContextProvider>
             </Box>

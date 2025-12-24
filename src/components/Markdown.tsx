@@ -8,7 +8,7 @@ import "katex/dist/katex.min.css";
 import "primer-markdown/build/build.css";
 import "@fontsource/noto-serif/index.css"; // Ensure you have the Noto Serif font installed
 import "highlight.js/styles/github.css"; // Import a highlight.js theme
-
+import "./Markdown.css";
 
 export interface MarkdownProps {
     children: React.ReactNode;

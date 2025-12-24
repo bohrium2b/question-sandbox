@@ -1,0 +1,61 @@
+import { Meta, Story, Controls, Canvas, Description } from '@storybook/addon-docs/blocks';
+import PerseusRenderer from '../PerseusRenderer';
+import * as PerseusRendererStories from './PerseusRenderer.stories';
+
+<Meta
+    title="Components/Examination/PerseusRenderer"
+    component={PerseusRenderer}
+    parameters={{
+        docs: {
+        },
+    }}
+    of={PerseusRendererStories}
+/>
+
+# PerseusRenderer
+
+The `PerseusRenderer` component is responsible for rendering Perseus-formatted content, including interactive questions, widgets, and mathematical expressions. Use this component to display rich educational content in your application.
+
+
+## Usage
+
+1. Import the `PerseusRenderer` component.
+2. Pass the Perseus item as a prop to the component.
+3. Use a `ref` to access the renderer's getScore() method for retrieving the score (as a percentage) of the rendered content.
+
+
+<Canvas of={PerseusRendererStories.Default}>
+    <Story name="Default" />
+</Canvas>
+
+## Score
+The `PerseusRenderer` component provides a method to retrieve the score of the rendered content. You can access this method using a `ref` to the component instance.
+
+```jsx
+import React, { useRef } from 'react';
+import PerseusRenderer from '../PerseusRenderer';
+import perseusItem from './perseusItem.json';
+
+const MyComponent = () => {
+    const rendererRef = useRef(null);
+
+    const handleGetScore = () => {
+        if (rendererRef.current) {
+            const score = rendererRef.current.getScore();
+            console.log(`Score: ${score}`);
+        }
+    };
+
+    return (
+        <div>
+            <PerseusRenderer
+                ref={rendererRef}
+                item={perseusItem}
+            />
+            <button onClick={handleGetScore}>Get Score</button>
+        </div>
+    );
+};
+```
+
+If the score is -1, it indicates that the score is not available or the item is not scored. Otherwise, the score will be a percentage value (from 0 to 1) representing the user's performance on the rendered content.
