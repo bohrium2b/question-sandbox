@@ -7,6 +7,7 @@ import type { MultiChoiceEditorRef } from "./MultiChoiceEditor";
 import type { Question } from "../types";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import Markdown from "./Markdown";
 
 const MultiChoiceEditor = lazy(() => import("./MultiChoiceEditor"));
 
@@ -65,7 +66,9 @@ export const QuestionCreator = React.forwardRef<QuestionCreatorRef, object>((pro
             )}
             {activeStep === 1 && (
                 <>
-                <MultiChoiceEditor ref={editorRef} {...question}  />
+                <React.Suspense fallback={<div>Loading...</div>}>
+                    <MultiChoiceEditor ref={editorRef} {...question}  />
+                </React.Suspense>
                 <Box sx={{ padding: 2, display: 'flex', justifyContent: 'space-between' }}>
                     
                     <Button onClick={handleBack} sx={{ marginLeft: 2 }}>
@@ -90,12 +93,22 @@ export const QuestionCreator = React.forwardRef<QuestionCreatorRef, object>((pro
                 <Box sx={{ padding: 2 }}>
                     {/* Review questions here */}
                     <Typography variant="h6">Preview Your Question</Typography>
-                    <Typography variant="body1">{question.question}</Typography>
-                    <ul>
-                        {question.choices?.map((choice, index) => (
-                            <li key={index}>{choice.content} {choice.correct && <span>(Correct)</span>}</li>
-                        ))}
-                    </ul>
+                    <Box sx={{ marginTop: 2, marginBottom: 2 }}>
+                        <Typography variant="subtitle1">Question {question.questionId}:</Typography>
+                        <Markdown>{question.question}</Markdown>
+                        <Typography variant="subtitle1" sx={{ marginTop: 2 }}>Choices:</Typography>
+                        <Markdown>
+{question.choices.map((choice, index) => `- ${choice.content}`).join('\n')}
+                        </Markdown>
+                        {question.hints && question.hints.length > 0 && (
+                            <>
+                                <Typography variant="subtitle1" sx={{ marginTop: 2 }}>Hints:</Typography>
+                                <Markdown>
+{question.hints.map((hint, index) => `1. ${hint}`).join('\n')}
+                                </Markdown>
+                            </>
+                        )}
+                    </Box>
                     <Box sx={{ padding: 2, display: 'flex', justifyContent: 'space-between' }}>
 
                         <Button onClick={handleBack} sx={{ marginLeft: 2 }}>
