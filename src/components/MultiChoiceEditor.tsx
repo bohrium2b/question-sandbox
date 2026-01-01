@@ -8,6 +8,10 @@ import CorrectIcon from "./assets/CorrectIcon.svg?react";
 import IncorrectIcon from "./assets/IncorrectIcon.svg?react";
 import { TextField, Tooltip, Typography } from "@mui/material";
 import theme from "../theme";
+import remarkMath from "remark-math";
+import remarkGfm from "remark-gfm";
+import rehypeKatex from "rehype-katex";
+import Markdown from "react-markdown";
 
 
 export type MultiChoiceEditorProps = {
@@ -54,10 +58,12 @@ export const MultiChoiceEditor = React.forwardRef<MultiChoiceEditorRef, MultiCho
                     <>
                         <Box sx={{ padding: 2 }}>
                             <Box sx={{ display: "flex", alignItems: "center", padding: 2 }}>
-                                <Typography component="span" variant="h6" sx={{ marginRight: 1 }}>
+                                <Typography component="label" variant="h6" htmlFor="question-id" sx={{ marginRight: 1 }} >
                                     Question
                                 </Typography>
                                 <TextField
+                                    id="question-id"
+                                    label="Question Number"
                                     value={questionId}
                                     onChange={(e) => setQuestionId(e.target.value ?? undefined)}
                                     variant="outlined"
@@ -68,13 +74,11 @@ export const MultiChoiceEditor = React.forwardRef<MultiChoiceEditorRef, MultiCho
                                     <Button onClick={() => setIsPreview(true)} variant="contained">Preview</Button>
                                 </Box>
                             </Box>
-                            <MDEditor
+                            <MarkdownEditor
                                 value={question}
                                 onChange={(value) => setQuestion(value ?? "")}
-                                height={100}
-                                textareaProps={{
-                                    placeholder: "Enter the question here...",
-                                }}
+                                placeholder={"Enter the question here..."}
+                                ariaLabel="Question content"
                             />
                         </Box>
                         <MultiChoiceChoicesEditor choices={choices} onChange={setChoices} numChoices={numChoices ?? 1} onNumChoicesChange={setNumChoices} />
@@ -158,17 +162,15 @@ const MultiChoiceChoicesEditor: React.FC<MultiChoiceChoicesEditorProps> = (props
                     </IconButton>
                     <Box key={index} sx={{ marginBottom: 1, width: "100%" }}>
                         {/* Markdown editor for choice content */}
-                        <MDEditor
+                        <MarkdownEditor
                             value={choice.content}
                             onChange={(value) => {
                                 const newChoices = [...choices];
                                 newChoices[index] = { ...newChoices[index], content: value ?? "" };
                                 onChange(newChoices);
                             }}
-                            height={100}
-                            textareaProps={{
-                                placeholder: `Enter choice ${letters[index]} here...`,
-                            }}
+                            placeholder={`Enter choice ${letters[index]} here...`}
+                            ariaLabel={`Choice ${letters[index]} editor`}
                         />
                     </Box>
                     <IconButton
@@ -226,7 +228,7 @@ const MultiChoiceHintsEditor = ({ hints, onChange }: MultiChoiceHintsEditorProps
             <Typography variant="h6" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 Hints
                 <Box component="span">
-                    <Tooltip title="Hints are optional clues or explanations shown to the candidate. They should be used only when the question assesses content beyond the scope of the syllabus and should avoid giving direct answers beyond general guidance to align to syllabus content. ">
+                    <Tooltip role="alert" title="Hints are optional clues or explanations shown to the candidate. They should be used only when the question assesses content beyond the scope of the syllabus and should avoid giving direct answers beyond general guidance to align to syllabus content. ">
                         <span >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                 <circle cx="12" cy="12" r="12" fill="#1976d2" />
@@ -241,17 +243,15 @@ const MultiChoiceHintsEditor = ({ hints, onChange }: MultiChoiceHintsEditorProps
                 <Box key={index} sx={{ display: "flex", alignItems: "top", gap: 1 }}>
                     <Typography sx={{ display: "inline", fontWeight: "bold", color: theme.palette.primary.light, fontSizeAdjust: -1, paddingRight: 1, minWidth: "3em", alignContent: "center", justifyContent: "center" }}>{index + 1} / {hints.length}</Typography>
                     <Box key={index} sx={{ marginBottom: 1, width: "95%" }}>
-                        <MDEditor
+                        <MarkdownEditor
                             value={hint}
                             onChange={(value) => {
                                 const newHints = [...hints];
                                 newHints[index] = value ?? "";
                                 onChange(newHints);
                             }}
-                            height={100}
-                            textareaProps={{
-                                placeholder: `Enter hint ${index + 1} here...`,
-                            }}
+                            placeholder={`Enter hint ${index + 1} here...`}
+                            ariaLabel={`Hint ${index + 1} editor`}
                         />
                     </Box>
                     <IconButton
@@ -273,4 +273,32 @@ const MultiChoiceHintsEditor = ({ hints, onChange }: MultiChoiceHintsEditorProps
     )
 }
 
+
+const MarkdownEditor = (props: {
+    value: string;
+    onChange: (value: string) => void;
+    placeholder?: string;
+    ariaLabel?: string;
+}) => {
+    return (
+        <MDEditor
+            value={props.value}
+            onChange={(value) => props.onChange(value ?? "")}
+            height={100}
+            textareaProps={{
+                placeholder: props.placeholder || "Enter text here...",
+                "aria-label": props.ariaLabel || props.placeholder || "Markdown editor"
+            }}
+            // @ts-ignore
+            previewOptions={{
+                // enable parsing of $...$ and $$...$$
+                // @ts-ignore
+                remarkPlugins: [remarkMath, remarkGfm],
+                // render math with KaTeX
+                // @ts-ignore
+                rehypePlugins: [rehypeKatex]
+            }}
+        />
+    )
+}
 export default MultiChoiceEditorMemo;
