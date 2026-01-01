@@ -52,10 +52,10 @@ export const MultiChoice = React.forwardRef<MultiChoiceRef, MultiChoiceProps>(({
                 "radio 1": {
                     type: "radio",
                     options: {
-                        choices: choices.map((choice) => ({
+                        choices: choices.map((choice, index) => ({
                             content: choice.content,
                             correct: choice.correct,
-                            id: choice.id ?? "multi-choice-choice-" + Math.random().toString(36).substr(2, 9),
+                            id: choice.id ?? "radio-choice-" + (index + 1).toString(),
                         })),
                         randomize: true,
                         multipleSelect: (numChoices ?? 1) > 1
