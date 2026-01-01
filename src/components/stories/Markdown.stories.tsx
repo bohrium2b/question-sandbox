@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect } from "storybook/test";
 import Markdown from "../Markdown";
+
 
 const meta = { 
     component: Markdown ,
@@ -51,6 +53,11 @@ function helloWorld() {
 export const LongText: Story = {
     args: {
         children: longText,
+    },
+    play: async ({ canvas, userEvent }) => {
+        const title = await canvas.getByRole('heading', { name: /this is a long markdown text/i });
+        const listItem = await canvas.getByText('Second item');
+        await expect(title).toBeVisible();
     },
 }
 
@@ -163,3 +170,15 @@ export const MathText: Story = {
         children: "\n# Markdown with Math\n\nHere is an inline math expression: $E = mc^2$.\n\nAnd here is a block math expression:\n\n$$\n\\int_{a}^{b} x^2 \\,dx = \\frac{b^3}{3} - \\frac{a^3}{3}\n$$\n\n## Full Math Suite\n\n### Fractions\n| Expression | Rendered |\n|-------------|----------|\n| `$\\frac{a}{b}$` | $\\frac{a}{b}$ |\n| `$$\\frac{1}{x^2 + 1}$$` | $$\\frac{1}{x^2 + 1}$$ |\n| `$\\dfrac{a+b}{c+d}$` | $\\dfrac{a+b}{c+d}$ |\n\n### Square Roots\n| Expression | Rendered |\n|-------------|----------|\n| `$\\sqrt{x}$` | $\\sqrt{x}$ |\n| `$$\\sqrt[3]{x^3 + 1}$$` | $$\\sqrt[3]{x^3 + 1}$$ |\n\n### Sums and Integrals\n| Expression | Rendered |\n|-------------|----------|\n| `$\\sum_{n=1}^{\\infty} \\frac{1}{n^2}$` | $\\sum_{n=1}^{\\infty} \\frac{1}{n^2}$ |\n| `$$\\int_{0}^{\\infty} e^{-x} \\,dx$$` | $$\\int_{0}^{\\infty} e^{-x} \\,dx$$ |\n\n### Matrices\n``` latex\n$$\n\\begin{bmatrix}\n1 & 2 & 3 \\\\\n4 & 5 & 6 \\\\\n7 & 8 & 9\n\\end{bmatrix}\n$$\n```\n\n$$\n\\begin{bmatrix}\n1 & 2 & 3 \\\\\n4 & 5 & 6 \\\\\n7 & 8 & 9\n\\end{bmatrix}\n$$\n\n### Greek Letters\n| Expression | Rendered |\n|-------------|----------|\n| `$\\alpha, \\beta, \\gamma$` | $\\alpha, \\beta, \\gamma$ |\n| `$$\\Delta, \\Theta, \\Omega$$` | $$\\Delta, \\Theta, \\Omega$$ |\n\n### Frequently used\n| Expression | Rendered |\n|-------------|----------|\n| `$e^{i\\pi} + 1 = 0$` | $e^{i\\pi} + 1 = 0$ |\n| `$$a^2 + b^2 = c^2$$` | $$a^2 + b^2 = c^2$$ |\n| `$\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1$` | $\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1$ |\n\n### Accents\n| Expression | Rendered |\n|-------------|----------|\n| `$\\hat{a}, \\tilde{b}, \\bar{c}$` | $\\hat{a}, \\tilde{b}, \\bar{c}$ |\n| `$$\\vec{v}, \\dot{x}, \\ddot{y}$$` | $$\\vec{v}, \\dot{x}, \\ddot{y}$$ |\n| `$\\overline{AB}, \\underline{CD}$` | $\\overline{AB}, \\underline{CD}$ |\n| `$$\\widehat{XYZ}, \\widetilde{W}$$` | $$\\widehat{XYZ}, \\widetilde{W}$$ |\n| `$$\\overbrace{a+b+c}^{\\text{sum}}, \\underbrace{d+e+f}_{\\text{sum}}$$` | $$\\overbrace{a+b+c}^{\\text{sum}}, \\underbrace{d+e+f}_{\\text{sum}}$$ |\n\n### Operators\n| Expression | Rendered |\n|-------------|----------|\n| `$\\times, \\div, \\pm, \\mp$` | $\\times, \\div, \\pm, \\mp$ |\n| `$$\\cdot, \\ast, \\star$$` | $$\\cdot, \\ast, \\star$$ |\n| `$\\leq, \\geq, \\neq$` | $\\leq, \\geq, \\neq$ |\n| `$$\\approx, \\equiv, \\propto$$` | $$\\approx, \\equiv, \\propto$$ |\n\n### Geometry Symbols\n| Expression | Rendered |\n|-------------|----------|\n| `$\\angle, \\triangle, \\perp$` | $\\angle, \\triangle, \\perp$ |\n| `$$\\parallel, \\cong, \\sim$$` | $$\\parallel, \\cong, \\sim$$ |\n\n### Other\n\n| Expression | Rendered |\n|-------------|----------|\n| `$\\infty, \\partial, \\nabla$` | $\\infty, \\partial, \\nabla$ |\n| `$$\\forall, \\exists, \\neg$$` | $$\\forall, \\exists, \\neg$$ |\n| `$$\\boxed{E=mc^2}$$` | $$\\boxed{E=mc^2}$$ |\n| `$\\|x\\|$` | $\\|x\\|$ |\n| `$\\vec{AB}$` | $\\vec{AB}$ |\n\nYou can also use other Markdown features like **bold text** and lists:\n\n- Item 1\n- Item 2\n- Item 3\n",
     },
 }
+
+export const HighlightTest: Story = {
+    args: {
+        children: `
+# Try highlighting
+
+Select any piece of this paragraph and use the floating "H" toolbar to apply a temporary highlight. Hover a highlight to reveal the × button to remove it.
+
+This demonstrates ephemeral, client-side annotations that are not persisted.
+`
+    },
+};

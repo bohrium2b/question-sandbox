@@ -2,6 +2,7 @@ import PassageQuestion from "../PassageQuestion";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import { ThemeProvider } from "@mui/material";
 import {theme} from "../../theme";
+import { expect } from "storybook/test";
 
 const meta: Meta<typeof PassageQuestion> = {
     title: "Components/Examination/PassageQuestion",
@@ -93,6 +94,15 @@ export const Default: Story = {
         hints: ["Good luck!"],
         questionId: '1'
     },
+    play: async ({ canvas, userEvent }) => {
+        const ipsumOption = await canvas.getAllByText('Ipsum');
+        await userEvent.click(ipsumOption[0]); // Click the first occurrence of 'Ipsum'
+
+        const expandButton = await canvas.getByRole('button', { name: 'Show Passage' });
+        await userEvent.click(expandButton);
+        const passageContent = await canvas.getByText('It report the bias in model');
+        await expect(passageContent).toBeInTheDocument();
+    }
 }
 
 export const Math: Story = {

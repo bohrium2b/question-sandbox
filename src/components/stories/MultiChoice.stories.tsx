@@ -2,6 +2,9 @@ import {MultiChoice, type MultiChoiceRef} from "../MultiChoice";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 import Button from "@mui/material/Button";
+import { expect } from "storybook/test";
+import CorrectIcon from "../assets/CorrectIcon.svg?react";
+import IncorrectIcon from "../assets/IncorrectIcon.svg?react";
 
 
 
@@ -29,10 +32,13 @@ const meta = {
             <>
                 <MultiChoice ref={rendererRef} {...args} />
                 <div style={{ marginTop: "20px" }}></div>
-                <Button variant="contained" onClick={handleGetScore}>Get Score</Button>
-                <div style={{ marginTop: "20px" }}>
-                    <p>Score: {score !== null ? score : "N/A"}</p>
-                </div>
+                <Button variant="contained" onClick={handleGetScore}>Check</Button>
+                {score !== null && (
+                    <div style={{ marginTop: "10px", display: "flex", alignItems: "center", gap: "10px" }}>
+                        <span>Score: {score}</span>
+                        {score > 0 ? <CorrectIcon width={24} height={24} /> : (score == 0 ? <IncorrectIcon width={24} height={24} /> : null)}
+                    </div>
+                )}
             </>
         );
     }
@@ -57,7 +63,14 @@ export const Default: Story = {
         questionId: "1",
         onScoreChange: (score) => console.log("Score changed:", score),
     },
-
+    play: async ({ canvas, userEvent }) => {
+        const parisOption = await canvas.getAllByText('Paris');
+        await userEvent.click(parisOption[1]); // Click the second occurrence of 'Paris'
+        const getScoreButton = await canvas.getByRole('button', { name: 'Get Score' });
+        await userEvent.click(getScoreButton);
+        const scoreDisplay = await canvas.getByText('Score: 1');
+        await expect(scoreDisplay).toBeInTheDocument();
+    }
 };
 
 export const Maths: Story = {
