@@ -1,12 +1,13 @@
 import React from "react";
 import Box from "@mui/material/Box";
-import { MultiChoice, type MultiChoiceProps } from "./MultiChoice";
+import {  type MultiChoiceProps } from "./MultiChoice";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MDEditor from "@uiw/react-md-editor";
 import CorrectIcon from "./assets/CorrectIcon.svg?react";
 import IncorrectIcon from "./assets/IncorrectIcon.svg?react";
 import { TextField, Tooltip, Typography } from "@mui/material";
+import { QuestionRendererWithUI as QuestionRenderer } from "./QuestionRenderer";
 import theme from "../theme";
 import remarkMath from "remark-math";
 import remarkGfm from "remark-gfm";
@@ -43,7 +44,7 @@ export const MultiChoiceEditor = React.forwardRef<MultiChoiceEditorRef, MultiCho
         const [questionId, setQuestionId] = React.useState<string | undefined>(props.questionId || undefined);
         const [numChoices, setNumChoices] = React.useState<number | undefined>(props.numChoices || 1)
         const [isPreview, setIsPreview] = React.useState<boolean>(false);
-
+        
         React.useImperativeHandle(ref, () => ({
             getQuestion: () => question,
             getChoices: () => choices,
@@ -87,15 +88,15 @@ export const MultiChoiceEditor = React.forwardRef<MultiChoiceEditorRef, MultiCho
                     </>
                 ) : (
                     <>
-                        <MultiChoice
-                            question={question}
-                            choices={choices}
-                            hints={hints}
-                            questionId={questionId}
-                            onScoreChange={() => { }}
-                            numChoices={numChoices}
-                            reviewMode={true}
-                        />
+                        <QuestionRenderer question={{
+                            type: "multi-choice",
+                            question,
+                            choices,
+                            hints,
+                            questionId,
+                            numChoices: numChoices ?? 1
+                        }} />
+                        
                         <Box sx={{ padding: 2 }}>
                             <Button variant="outlined" onClick={() => setIsPreview(false)}>
                                 Edit
@@ -171,6 +172,20 @@ const MultiChoiceChoicesEditor: React.FC<MultiChoiceChoicesEditorProps> = (props
                             }}
                             placeholder={`Enter choice ${letters[index]} here...`}
                             ariaLabel={`Choice ${letters[index]} editor`}
+                        />
+                        <TextField
+                            label="Rationale (optional)"
+                            value={choice.rationale || ""}
+                            onChange={(e) => {
+                                const newChoices = [...choices];
+                                newChoices[index] = { ...newChoices[index], rationale: e.target.value };
+                                onChange(newChoices);
+                            }}
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                            sx={{ marginTop: 1 }}
+                            placeholder="Enter rationale for this choice (shown in review mode)"
                         />
                     </Box>
                     <IconButton
