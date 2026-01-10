@@ -232,6 +232,7 @@ export const PerseusRenderer = forwardRef<PerseusRendererRef, PerseusRendererPro
                             flags: {"new-radio-widget": props.newRadioWidget ?? false, "image-widget-upgrade": true}
                         }}
                         hintsVisible={0}
+                        disabled={props.reviewMode || false}
                     />
                 </PerseusI18nContextProvider>
             </Box>

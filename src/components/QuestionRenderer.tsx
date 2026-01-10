@@ -1,7 +1,7 @@
-import type {Question} from "../types";
-import React, {useState, useEffect, useRef} from 'react';
-import {MultiChoice, type MultiChoiceRef} from "./MultiChoice";
-import {PassageQuestion} from "./PassageQuestion";
+import type { Question } from "../types";
+import React, { useState, useEffect, useRef } from 'react';
+import { MultiChoice, type MultiChoiceRef } from "./MultiChoice";
+import { PassageQuestion } from "./PassageQuestion";
 import { Box, Paper, Button, Typography, Popover } from "@mui/material";
 import CorrectIcon from "./assets/CorrectIcon.svg?react";
 import IncorrectIcon from "./assets/IncorrectIcon.svg?react";
@@ -29,7 +29,7 @@ export const QuestionRenderer: React.ForwardRefExoticComponent<{ question: Quest
 });
 
 
-export const QuestionRendererWithUI: React.FC<{ question: Question,  }> = ({ question,  }) => {
+export const QuestionRendererWithUI: React.FC<{ question: Question, }> = ({ question, }) => {
     const hintsAvailable = question.hints && question.hints.length > 0;
     const [hintsToShow, setHintsToShow] = useState(0);
     const [score, setScore] = useState<number | null>(null);
@@ -55,13 +55,20 @@ export const QuestionRendererWithUI: React.FC<{ question: Question,  }> = ({ que
         if (currentScore >= 0) {
             setReviewMode(true);
         }
+        if (currentScore === 0) {
+            // Show all hints
+            setHintsToShow(question.hints ? question.hints.length : 0);
+        }
     }
     return (
         <Paper elevation={3} sx={{ padding: 2, margin: 2 }}>
-            
-            <QuestionRenderer question={question} reviewMode={reviewMode} numberOfHintsToShow={hintsToShow} 
-            // @ts-expect-error - TS2769 - No overload matches this call.
-            ref={questionRef} />
+            <Box sx={{  pointerEvents: reviewMode ? 'none' : 'auto' }}>
+                <QuestionRenderer question={question}
+                    reviewMode={reviewMode}
+                    numberOfHintsToShow={hintsToShow}
+                    // @ts-expect-error - TS2769 - No overload matches this call.
+                    ref={questionRef} />
+            </Box>
             <Box sx={{ marginTop: 2, paddingTop: 1, borderTop: `2.5px dashed ${theme.palette.grey[300]}` }}>
                 {/* On left, button for hint (if available) */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
