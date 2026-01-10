@@ -15,6 +15,7 @@ export type MultiChoiceChoice = {
     content: string;
     correct: boolean;
     id?: string;
+    rationale?: string;
 };
 
 export type MultiChoiceRef = {
@@ -60,6 +61,7 @@ export const MultiChoice = React.forwardRef<MultiChoiceRef, MultiChoiceProps>(({
                             content: choice.content,
                             correct: choice.correct,
                             id: choice.id ?? "radio-choice-" + (index + 1).toString(),
+                            rationale: choice.rationale,
                         })),
                         randomize: true,
                         multipleSelect: (numChoices ?? 1) > 1
