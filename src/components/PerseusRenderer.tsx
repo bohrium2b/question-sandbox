@@ -186,7 +186,7 @@ export const PerseusRenderer = forwardRef<PerseusRendererRef, PerseusRendererPro
     // registerCoreWidgets();
     Dependencies.setDependencies(dependencies);
     return (
-        <Box sx={{ width: "98%", borderRadius: 3, border: "2px solid #d9d9d9", overflow: "none" }}>
+        <Box sx={{ width: "98%", borderRadius: 3, overflow: "none" }}>
             <Box sx={{ display: "inline-flex", alignItems: "top", gap: 1, padding: 2, fontFamily: "Noto Serif, serif", overflow: "auto" }}>
                 {questionId && 
                 <Typography 
