@@ -1,12 +1,14 @@
 import type { PerseusItem } from "@khanacademy/perseus-core";
-import {PerseusRenderer, type PerseusRendererProps} from "./PerseusRenderer";
-import type {MultiChoiceQuestion} from "../types";
+import { PerseusRenderer } from "./PerseusRenderer";
+import type { MultiChoiceQuestion } from "../types";
 import React from "react";
 
 
 export type MultiChoiceProps = MultiChoiceQuestion & {
     onScoreChange?: (score: number) => void;
     reviewMode?: boolean;
+    showHintsUI?: boolean;
+    numberOfHintsToShow?: number;
 };
 
 export type MultiChoiceChoice = {
@@ -27,6 +29,8 @@ export const MultiChoice = React.forwardRef<MultiChoiceRef, MultiChoiceProps>(({
     numChoices,
     onScoreChange,
     reviewMode = false,
+    showHintsUI = true,
+    numberOfHintsToShow,
 }: MultiChoiceProps, ref) => {
     /* This component renders a multiple-choice question using the PerseusRenderer.
         * It accepts a question string, an array of choices, optional hints, a question ID,
@@ -75,14 +79,19 @@ export const MultiChoice = React.forwardRef<MultiChoiceRef, MultiChoiceProps>(({
     };
     // Render a perseusrenderer for abstraction
     return (
-        <PerseusRenderer
-            ref={rendererRef}
-            question={question}
-            item={item}
-            hints={hints}
-            questionId={questionId}
-            onScoreChange={onScoreChange}
-            reviewMode={reviewMode}
-        />
+        <>
+            <PerseusRenderer
+                ref={rendererRef}
+                question={question}
+                item={item}
+                hints={hints}
+                questionId={questionId}
+                onScoreChange={onScoreChange}
+                reviewMode={reviewMode}
+                showHintsUI={showHintsUI}
+                numberOfHintsToShow={numberOfHintsToShow}
+            />
+        </>
+
     );
 });

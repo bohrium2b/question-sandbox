@@ -1,8 +1,8 @@
 import { ServerItemRenderer, type PerseusDependencies, type VideoKind } from "@khanacademy/perseus";
 import { PerseusI18nContextProvider } from "@khanacademy/perseus";
-import { type PerseusItem, type PerseusRenderer as RawRenderer } from "@khanacademy/perseus-core";
+import { type PerseusItem } from "@khanacademy/perseus-core";
 import { scorePerseusItem } from "@khanacademy/perseus-score";
-import { useState, useEffect, useRef, useImperativeHandle, useCallback, forwardRef } from "react";
+import { useState, useRef, useImperativeHandle, useCallback, forwardRef } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Dependencies } from "@khanacademy/perseus";
@@ -23,6 +23,8 @@ export type PerseusRendererProps = {
     onScoreChange?: (score: number) => void;
     reviewMode?: boolean;
     newRadioWidget?: boolean;
+    showHintsUI?: boolean; 
+    numberOfHintsToShow?: number;
 };
 
 export type PerseusRendererRef = {
@@ -36,14 +38,14 @@ export const dependencies: PerseusDependencies = {
         useJIPT: false,
     },
     graphieMovablesJiptLabels: {
-        addLabel: (label, useMath) => { },
+        addLabel: (_label, _useMath) => { },
     },
     svgImageJiptLabels: {
-        addLabel: (label, useMath) => { },
+        addLabel: (_label, _useMath) => { },
     },
     rendererTranslationComponents: {
-        addComponent: (renderer) => -1,
-        removeComponentAtIndex: (index) => { },
+        addComponent: (_renderer) => -1,
+        removeComponentAtIndex: (_index) => { },
     },
 
     TeX: TeX,
@@ -57,9 +59,10 @@ export const dependencies: PerseusDependencies = {
     },
 
     // video widget
-    useVideo: (id, kind) => {
+    // @ts-expect-error - TS7002 - Parameter 'id' implicitly has an 'any' type.
+    useVideo: (_id, _kind) => {
         // Used by video-transcript-link.jsx.fixture.js
-        if (id === "YoutubeId" && kind === "YOUTUBE_ID") {
+        if (_id === "YoutubeId" && _kind === "YOUTUBE_ID") {
             return {
                 status: "success",
                 data: {
@@ -73,7 +76,7 @@ export const dependencies: PerseusDependencies = {
                 },
             };
         }
-        if (id === "slug-video-id" && kind === "READABLE_ID") {
+        if (_id === "slug-video-id" && _kind === "READABLE_ID") {
             return {
                 status: "success",
                 data: {
@@ -118,15 +121,25 @@ export const PerseusRenderer = forwardRef<PerseusRendererRef, PerseusRendererPro
     // It also registers core widgets and sets dependencies for the Perseus framework.
     const { question, item, hints, questionId } = props;
     const rendererRef = useRef<typeof ServerItemRenderer | null>(null);
-    const [hintsIndex, setHintsIndex] = useState(-1);
-    const [score, setScore] = useState<number | null>(null);
+    // const [hintsIndex, setHintsIndex] = useState(-1);
+    const [_,] = useState(0);
+    const [, setScore] = useState<number | null>(null);
     const theme = useTheme();
+    const [hintsControlled,] = useState(props.numberOfHintsToShow !== null && props.numberOfHintsToShow !== undefined && props.showHintsUI === false);
+
+    if (hintsControlled && props.numberOfHintsToShow !== null && props.numberOfHintsToShow !== undefined && props.showHintsUI === false) {
+        var hintsIndex = props.numberOfHintsToShow - 1;
+
+    } else {
+        var [hintsIndex, setHintsIndex] = useState(-1);
+    }
 
     const getScore = useCallback(() => {
         const renderer = rendererRef.current;
         if (!renderer) {
             return null;
         }
+        // @ts-expect-error - TS2339 - Property 'getUserInput' does not exist on type 'PerseusRenderer'.
         const userInput = renderer.getUserInput();
         console.log(userInput)
         if (!userInput) {
@@ -199,17 +212,18 @@ export const PerseusRenderer = forwardRef<PerseusRendererRef, PerseusRendererPro
             <Box sx={{ padding: 4, fontFamily: 'Roboto, sans-serif', overflow: "auto" }} className="perseus-framework">
                 <PerseusI18nContextProvider locale="en" strings={mockStrings}>
                     <ServerItemRenderer
+                        // @ts-expect-error - TS2322 - Type 'MutableRefObject<PerseusRenderer | null>' is not assignable to type 'Ref<PerseusRenderer>'.
                         ref={rendererRef}
                         item={item}
                         dependencies={{
                             analytics: {
                                 onAnalyticsEvent: () => Promise.resolve(),
                             },
-                            useVideo: (id: string, kind: VideoKind) => ({
+                            useVideo: (_id: string, _kind: VideoKind) => ({
                                 status: "success",
                                 data: { video: null },
                             }),
-                            generateUrl: (args: any) => {
+                            generateUrl: (_args: any) => {
                                 return "mockGenerateUrl";
                             },
                         }}
@@ -227,7 +241,6 @@ export const PerseusRenderer = forwardRef<PerseusRendererRef, PerseusRendererPro
                         display: 'none',
                     }
                  }}>
-                    <Typography variant="subtitle1" sx={{fontWeight: "bold", color: "#606060", fontSize: "0.9rem"}}>HINTS:</Typography>
                     {hintsIndex >= 0 && hintsIndex <= hints.length ? (
                         <>
                         {
@@ -244,21 +257,23 @@ export const PerseusRenderer = forwardRef<PerseusRendererRef, PerseusRendererPro
                     ) : (
                         <Typography variant="body1"></Typography>
                     )}
-                    {hintsIndex != hints.length - 1 ? (<Button
-                        onClick={() => setHintsIndex((prev) => (prev + 1))}
-                        style={{ marginTop: "10px" }}
-                        variant="contained"
-                    >
-                        {hintsIndex == -1 ? "Stuck? Get a hint" : "Next Hint"}
-                    </Button>) : (
-                        <Button
-                            disabled
+                    {props.showHintsUI !== false && <Box>
+                        { hintsIndex != hints.length - 1 ? (<Button
+                            onClick={() => setHintsIndex((prev) => (prev + 1))}
                             style={{ marginTop: "10px" }}
                             variant="contained"
                         >
-                            No More Hints
-                        </Button>
-                    )}
+                            {hintsIndex == -1 ? "Stuck? Get a hint" : "Next Hint"}
+                        </Button>) : (
+                            <Button
+                                disabled
+                                style={{ marginTop: "10px" }}
+                                variant="contained"
+                            >
+                                No More Hints
+                            </Button>
+                        )}
+                    </Box>}
                 </Box>
             )}
         </Box>
