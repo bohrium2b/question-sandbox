@@ -3,6 +3,8 @@ import React, {useState, useEffect, useRef} from 'react';
 import {MultiChoice, type MultiChoiceRef} from "./MultiChoice";
 import {PassageQuestion} from "./PassageQuestion";
 import { Box, Paper, Button, Typography, Popover } from "@mui/material";
+import CorrectIcon from "./assets/CorrectIcon.svg?react";
+import IncorrectIcon from "./assets/IncorrectIcon.svg?react";
 import theme from "../theme";
 
 export const QuestionRenderer: React.ForwardRefExoticComponent<{ question: Question, reviewMode?: boolean, numberOfHintsToShow?: number }> = React.forwardRef(({ question, reviewMode, numberOfHintsToShow }, ref) => {
@@ -27,12 +29,13 @@ export const QuestionRenderer: React.ForwardRefExoticComponent<{ question: Quest
 });
 
 
-export const QuestionRendererWithUI: React.FC<{ question: Question, reviewMode?: boolean }> = ({ question, reviewMode }) => {
+export const QuestionRendererWithUI: React.FC<{ question: Question,  }> = ({ question,  }) => {
     const hintsAvailable = question.hints && question.hints.length > 0;
     const [hintsToShow, setHintsToShow] = useState(0);
     const [score, setScore] = useState<number | null>(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const questionRef = useRef<any>(null);
+    const [reviewMode, setReviewMode] = useState(false);
 
     useEffect(() => {
         if (score !== null) {
@@ -49,7 +52,9 @@ export const QuestionRendererWithUI: React.FC<{ question: Question, reviewMode?:
         const currentScore = questionRef.current?.getScore();
         console.log(currentScore)
         setScore(currentScore);
-
+        if (currentScore >= 0) {
+            setReviewMode(true);
+        }
     }
     return (
         <Paper elevation={3} sx={{ padding: 2, margin: 2 }}>
@@ -66,7 +71,7 @@ export const QuestionRendererWithUI: React.FC<{ question: Question, reviewMode?:
                         {hintsToShow >= (question.hints?.length || 0) ? 'No more hints available' : 'Stuck? Get a hint'}
                     </Button>
                     {/* On right, display Scoring */}
-                    <Button variant="contained" size="small" onClick={checkScore} id="check-score-button">
+                    <Button variant="contained" size="large" onClick={checkScore} disabled={reviewMode} id="check-score-button">
                         Check
                     </Button>
                     <Popover
@@ -99,16 +104,32 @@ const ScoreTooltip: React.FC<{ score: number | null }> = ({ score }) => {
             backgroundColor: theme.palette.background.paper,
         }}>
             {score === 1 ? (
-                <Typography variant="body1" color="success.main">
-                    Correct! Well done.
-                </Typography>
+                <>
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
+                        <CorrectIcon style={{ width: 24, height: 24, marginRight: 8 }} />
+                        <Typography variant="body1" color="success.main">
+                            Nice Work!
+                        </Typography>
+                    </Box>
+                    <Typography variant="body1">
+                        Well done! Onward!
+                    </Typography>
+                </>
             ) : score === 0 ? (
-                <Typography variant="body1" color="error">
-                    Incorrect. Please try again.
-                </Typography>
+                <>
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
+                        <IncorrectIcon style={{ width: 24, height: 24, marginRight: 8 }} />
+                        <Typography variant="body1" color="error.main">
+                            Not Quite
+                        </Typography>
+                    </Box>
+                    <Typography variant="body1">
+                        Don't worry, let's continue!
+                    </Typography>
+                </>
             ) : (
                 <Typography variant="body1">
-                    Please answer the question to see your score.
+                    We couldn't grade your answer. Make sure you have fully completed the question, then try again.
                 </Typography>
             )}
         </Box>
