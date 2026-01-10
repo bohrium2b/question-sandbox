@@ -31,7 +31,7 @@ jobs:
         run: pnpm install
 
       - name: Build Storybook
-        run: pnpm run build-storybook --silent -- -o storybook-static
+        run: pnpm run build-storybook -o storybook-static
 
       - name: Deploy to gh-pages under /storybook
         uses: JamesIves/github-pages-deploy-action@v4
