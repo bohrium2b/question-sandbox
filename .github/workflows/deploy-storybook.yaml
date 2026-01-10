@@ -39,6 +39,5 @@ jobs:
           branch: gh-pages
           folder: storybook-static
           destination_dir: storybook
-          token: ${{ secrets.GITHUB_TOKEN }}
           clean: true
           commit_message: "ci: deploy Storybook"
